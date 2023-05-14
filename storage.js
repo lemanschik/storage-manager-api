@@ -16,14 +16,16 @@ const FileSystemIndex = {}
 // Exists as long as a dir is open when .close the FileSystemIndex gets Empty
 // Stores the current handle and its state if it is open or ReadWrite.
 
+const getDirectory = (name,path) => () => fs.promises
+    .readdir(`${path}${ (path||name) ? '/' : '.' }${name}`,{ recursive:false,withFileTypes: true })
+    .then(dirEnts=>dirEnts.map((dirEnt) => IFileSystemHandle(dirEnt,path))
 
 // TODO: do not go relativ more deep in the fs module then current process.pwd and minimum deep process.pwd
 // if you do a readdir you get the dirEntrie, fileSystemIndexKey === path
 const IDirectoryHandle = (name='',path='') => ({
-  getDirectory: () => fs.promises
-    .readdir(`${path}${ (path||name) ? '/' : '.' }${name}`,{ recursive:false,withFileTypes: true }).then(dirEnts=>dirEnts.map(([ent,typeSymbol])=>IDirectoryHandle)),
-  name: dirEnt[0],
-  kind: 'directory'
+  resolve: async (handle) => getDirectory(name,path)
+  getDirectory: getDirectory(name,path),
+  name,kind: 'directory'
 });
 
 const IFileHandle = (dirEnt,path) => ({
