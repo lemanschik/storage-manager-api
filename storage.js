@@ -33,7 +33,16 @@ const IFileHandle = (dirEnt,path) => ({
 })
 
 const IFileSystemHandle = (dirEnt,resolvedPath) => dirEnt ? ({
-  ...([,'file','directory','link'].find((kind,i) => i === dirEnt[dirEnt[1]]) === 'directory' && IDirectoryHandle(dirEnt[0],resolvedPath))
+  ...([,'file','directory','softLink','hardLink'].find((kind,i) => i === dirEnt[dirEnt[1]]) === 'directory' && IDirectoryHandle(dirEnt[0],resolvedPath))
 }) : IDirectoryHandle('.')
 
 export StorageManager = navigator ? navigator.storage : IDirectoryHandle('.')
+
+
+// Structure Advice
+// .versions/objects/blob // can be low level used without the tree but should update eventual tree if it exists. Dragons are here
+// .versions/objects/tree
+// .versions/objects/commit (Collection of tree and blob objects signed and verifyed)
+// .versions/refs/tags/versiontag => value is a commit ref
+// .versions/refs/metatags/name => returns commits. 
+
